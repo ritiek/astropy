@@ -510,6 +510,35 @@ class HDUList(list, _Verify):
 
         return output
 
+    def __copy__(self):
+        """
+        Return a shallow copy of the object.
+
+        Returns
+        -------
+        self : HDUList
+            A shallow copy of this :class:`HDUList` object.
+
+        """
+
+        return self[:]
+
+    # Syntactic sugar for `__copy__()` magic method
+    copy = __copy__
+
+    def __deepcopy__(self, memo=None):
+        """
+        Return a deep copy of the object.
+
+        Returns
+        -------
+        self : HDUList
+            A deep copy of this :class:`HDUList` object.
+
+        """
+
+        return HDUList([hdu.copy() for hdu in self])
+
     def pop(self, index=-1):
         """ Remove an item from the list and return it.
 

@@ -5,6 +5,7 @@ import io
 import os
 import platform
 import sys
+import copy
 
 import pytest
 import numpy as np
@@ -375,6 +376,43 @@ class TestHDUListFunctions(FitsTestCase):
         tmpfile.close()
         info = [(0, 'PRIMARY', 1, 'PrimaryHDU', 5, (100,), 'int32', '')]
         assert fits.info(self.temp('tmpfile.fits'), output=False) == info
+
+    def test_shallow_copy(self):
+        """
+        Tests that `HDUList.__copy__()`and `HDUList.copy()` returns a
+        shallow copy (regression test for ticket:7211).
+        """
+
+        n = np.arange(10.0)
+        primary_hdu = fits.PrimaryHDU(n)
+        hdu = fits.ImageHDU(n)
+        hdul = fits.HDUList([primary_hdu, hdu])
+
+        for hdulcopy in (hdul.copy(), copy.copy(hdul)):
+            assert isinstance(hdulcopy, fits.HDUList)
+            assert hdulcopy is not hdul
+            assert hdulcopy[0] is hdul[0]
+            assert hdulcopy[1] is hdul[1]
+
+    def test_deep_copy(self):
+        """
+        Tests that `HDUList.__deepcopy__()` returns a deep copy.
+        """
+
+        n = np.arange(10.0)
+        primary_hdu = fits.PrimaryHDU(n)
+        hdu = fits.ImageHDU(n)
+        hdul = fits.HDUList([primary_hdu, hdu])
+
+        hdulcopy = copy.deepcopy(hdul)
+
+        assert isinstance(hdulcopy, fits.HDUList)
+        assert hdulcopy is not hdul
+
+        for index in range(1):
+            assert hdulcopy[index] is not hdul[index]
+            assert hdulcopy[index].header == hdul[index].header
+            assert (hdulcopy[index].data == hdul[index].data).all()
 
     def test_new_hdu_extname(self):
         """

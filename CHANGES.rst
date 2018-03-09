@@ -202,6 +202,10 @@ astropy.io.misc
 astropy.io.fits
 ^^^^^^^^^^^^^^^
 
+- Create magic methods ``__copy__`` and ``__deepcopy__`` on an ``HDUList``
+  class instance.
+- Override ``HDUList.copy()`` to return a shallow HDUList instance [#7218].
+
 astropy.io.registry
 ^^^^^^^^^^^^^^^^^^^
 
