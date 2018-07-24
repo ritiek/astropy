@@ -111,7 +111,7 @@ def biweight_location(data, c=6.0, M=None, axis=None):
     u = (1 - u ** 2) ** 2
     u[mask] = 0
 
-    return M.squeeze() + (d * u).sum(axis=axis) / u.sum(axis=axis)
+    return M.squeeze() + np.nan_to_num((d * u).sum(axis=axis) / u.sum(axis=axis))
 
 
 def biweight_scale(data, c=9.0, M=None, axis=None, modify_sample_size=False):
